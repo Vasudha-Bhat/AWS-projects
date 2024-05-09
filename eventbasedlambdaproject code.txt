@@ -1,0 +1,38 @@
+import json
+
+def lambda_handler(event, context):
+    #TODO implement
+    print(event)
+    try:
+        for i in event['Records']:
+            s3_event = json.loads(i['body'])
+            if 'Event' in s3_event and s3_event['Event'] == 's3:TestEvent':
+                print("Test Event")
+            else:
+                for j in s3_event['Records']:
+                    print("Bucket Name : {} ".format(j['s3']['bucket']['name']))
+                    print("Object Name : {} ".format(j['s3']['object']['key']))
+    except Exception as exception:
+        print(exception)
+
+--------------------------------------------------------------------------------------------------------------------------------
+SQS-s3 Access Policy:
+----------------------------------
+{
+  "Version": "2012-10-17",
+  "Id": "Policy1662050523224",
+  "Statement": [
+    {
+      "Sid": "Stmt1662050521697",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "sqs:*",
+      "Resource": "{SQS Queue ARN}",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "{s3 bucket ARN}"
+        }
+      }
+    }
+  ]
+}
